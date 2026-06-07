@@ -1,0 +1,1 @@
+# STON.fi-Contest
