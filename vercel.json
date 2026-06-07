@@ -2,16 +2,7 @@
   "version": 2,
   "functions": {
     "api/*.js": {
-      "runtime": "nodejs20.x"
+      "maxDuration": 30
     }
-  },
-  "headers": [
-    {
-      "source": "/tonconnect-manifest.json",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Content-Type", "value": "application/json" }
-      ]
-    }
-  ]
+  }
 }
