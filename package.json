@@ -1,0 +1,18 @@
+{
+  "name": "stonpayouts-omniston-static",
+  "version": "1.0.0",
+  "private": true,
+  "description": "STONPayouts — any-token mass payouts for TON teams, powered by STON.fi Omniston v1beta8.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "check": "node -e \"import('./api/quote.js').then(()=>console.log('API modules import OK'))\""
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "dependencies": {
+    "@ston-fi/omniston-sdk": "0.8.3"
+  }
+}

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STONPayouts — Any-token mass payouts</title>
+  <meta name="description" content="Any-token mass payouts for TON teams, hackathons and DAOs powered by STON.fi Omniston." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/icon.svg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="drop-overlay" id="dropOverlay">
+    <div>
+      <strong>Drop recipients file</strong>
+      <span>CSV, XLS or XLSX with columns: name, wallet, amount, token</span>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="STONPayouts home">
+      <span class="brand-mark">S</span>
+      <span>STONPayouts</span>
+    </a>
+    <nav class="top-actions">
+      <span class="pill" id="integrationPill">Real Omniston API</span>
+      <div id="ton-connect-button"></div>
+      <button class="ghost" id="demoWalletBtn" type="button">Use demo wallet</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Any-token rewards router for TON teams</p>
+        <h1>Pay many contributors from one treasury token.</h1>
+        <p class="hero-text">
+          Create a payout batch, quote every recipient through STON.fi Omniston, and review each transaction in your TON wallet.
+        </p>
+      </div>
+      <div class="hero-card">
+        <span class="small-label">Treasury wallet</span>
+        <strong id="walletLabel">Not connected</strong>
+        <p id="walletHint">Connect Tonkeeper/Tonhub or use the demo wallet for a UI-only preview.</p>
+      </div>
+    </section>
+
+    <section class="flow-grid">
+      <div class="main-flow">
+        <section class="block treasury-block">
+          <div class="block-head treasury-head">
+            <span class="step">01</span>
+            <div>
+              <h2>Treasury setup</h2>
+              <p>Your team spends one token. Recipients can still receive different assets.</p>
+            </div>
+          </div>
+
+          <div class="treasury-switcher">
+            <div class="treasury-copy">
+              <span class="small-label">Payout batch</span>
+              <strong>STON.fi Vibe Coding Rewards</strong>
+              <p>One treasury balance is routed into many recipient tokens through STON.fi Omniston.</p>
+            </div>
+            <label class="treasury-select-label">
+              Sender spends
+              <select id="treasuryToken">
+                <option value="TON" selected>TON — Toncoin</option>
+                <option value="USDT">USDT — Tether USD</option>
+                <option value="STON">STON</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="block recipients-block">
+          <div class="block-head inline-head">
+            <div class="headline-with-step">
+              <span class="step">02</span>
+              <div>
+                <h2>Recipients</h2>
+                <p>Add wallets manually or drop a CSV/XLSX file anywhere on the page.</p>
+              </div>
+            </div>
+            <div class="import-actions">
+              <label class="file-btn">
+                Import file
+                <input id="csvInput" type="file" accept=".csv,.xlsx,.xls" />
+              </label>
+              <!-- <a class="ghost-link" href="/sample/recipients.csv" download>Sample CSV</a> -->
+            </div>
+          </div>
+
+          <form id="recipientForm" class="recipient-form">
+            <input id="recipientName" placeholder="Name, e.g. Max Contributor" />
+            <input id="recipientWallet" placeholder="TON wallet address" />
+            <input id="recipientAmount" placeholder="Amount" inputmode="decimal" />
+            <select id="recipientToken">
+              <option value="USDT">USDT</option>
+              <option value="TON">TON</option>
+              <option value="STON">STON</option>
+            </select>
+            <button class="primary" type="submit">Add</button>
+          </form>
+
+          <div class="drop-hint">
+            <span>Tip:</span> drag an Excel or CSV recipients list onto the page to import it instantly.
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Receives</th>
+                  <th>Route</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recipientRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-panel">
+        <section class="summary block">
+          <div class="block-head compact">
+            <span class="step">03</span>
+            <div>
+              <h2>Live receipt</h2>
+              <p>Transparent batch status.</p>
+            </div>
+          </div>
+
+          <div class="summary-list">
+            <div>
+              <span>Recipients</span>
+              <strong id="sumRecipients">0</strong>
+            </div>
+            <div>
+              <span>Quoted</span>
+              <strong id="sumQuoted">0</strong>
+            </div>
+            <div>
+              <span>Paid</span>
+              <strong id="sumPaid">0</strong>
+            </div>
+            <div>
+              <span>Treasury estimate</span>
+              <strong id="sumTreasury">—</strong>
+            </div>
+          </div>
+
+          <button class="primary wide" id="quoteAllBtn" type="button">Quote all through Omniston</button>
+          <button class="secondary wide" id="exportCsvBtn" type="button">Export Excel receipt</button>
+          <p class="tiny-note">
+            For STON.fi submission, show a real quote and wallet review. Demo fallback is only for local UI safety.
+          </p>
+        </section>
+
+        <section class="block tech-card">
+          <h3>Hackathon fit</h3>
+          <ul>
+            <li>TON wallet connection via TonConnect</li>
+            <li>Omniston SDK v1beta8 quote/build-transfer API</li>
+            <li>Clear B2B use case for DAOs, bounties and hackathons</li>
+            <li>Vercel-ready live production URL</li>
+          </ul>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
