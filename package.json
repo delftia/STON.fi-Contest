@@ -4,13 +4,14 @@
   "private": true,
   "description": "STONPayouts — any-token mass payouts for TON teams, powered by STON.fi Omniston v1beta8.",
   "type": "module",
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
     "check": "node -e \"import('./api/quote.js').then(()=>console.log('API modules import OK'))\""
   },
   "engines": {
-    "node": ">=20.18.0"
+    "node": "20.x"
   },
   "dependencies": {
     "@ston-fi/omniston-sdk": "0.8.3"
